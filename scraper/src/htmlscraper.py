@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
-from src.albumscraper import AlbumParser
+import argparse
+from src.albumscraper import AlbumScraper
 import os
 
 
@@ -8,6 +9,7 @@ class HtmlScraper:
         self.directory = directory
 
     def scrape_html_file(self, filepath):
+        result = []
         with open(filepath, "r") as file:
             if not file:
                 raise FileNotFoundError
@@ -16,16 +18,18 @@ class HtmlScraper:
                 "div", class_="page_section_charts_item_wrapper  anchor"
             )
 
-            result = []
             for album_div in album_divs:
-                album = AlbumParser(album_div)
+                album = AlbumScraper(album_div)
                 album_data = album.get_album_data()
                 result.append(album_data)
 
-        return
+        return result
 
     def walk_directory(self):
+        albums = []
         for dirpath, dirnames, filenames in os.walk(directory):
             for filename in filenames:
                 if filename.endswith(".html"):
-                    self.scrape_html_file(os.path.join(dirpath, filename))
+                    page_albums = self.scrape_html_file(os.path.join(dirpath, filename))
+                    albums = albums + page_albums
+        return albums

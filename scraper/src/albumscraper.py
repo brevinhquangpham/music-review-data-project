@@ -68,7 +68,7 @@ def get_genres(genre_div):
     return get_text_from_links(genre_div, "genre comma_separated")
 
 
-class AlbumParser:
+class AlbumScraper:
     def __init__(self, album_div):
         self.album = album_div
 
