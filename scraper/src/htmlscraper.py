@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-import argparse
 from albumscraper import AlbumScraper
 import os
 

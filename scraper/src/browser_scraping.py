@@ -12,7 +12,8 @@ from selenium_stealth import stealth
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 import time
 
-HARDDRIVE = "HARDDRIVE"
+# Replace SAVEDIR and PROXY_PORT with your information or use environment variables
+SAVEDIR = "SAVEDIR"
 global save_path
 PROXY_PORT = "PORT"
 GENRES = [
@@ -212,14 +213,14 @@ def get_htmls(initial_year, initial_page, genre):
 
 def handle_save_path(genre):
     global save_path
-    path = f"{HARDDRIVE}{genre}/"
-    if not os.path.exists(f"{HARDDRIVE}/{genre}/"):
-        os.chdir(HARDDRIVE)
+    path = f"{SAVEDIR}{genre}/"
+    if not os.path.exists(f"{SAVEDIR}/{genre}/"):
+        os.chdir(SAVEDIR)
         os.makedirs(genre)
     save_path = path
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description="Webscraper")
     parser.add_argument("start_genre_index", help="Initial Index of Genre", type=int)
     parser.add_argument("year_start_initial", help="Initial Year of Genre", type=int)
@@ -227,3 +228,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     run_driver(args.start_genre_index, args.year_start_initial, args.page_start_initial)
+
+
+if __name__ == "__main__":
+    main()

@@ -15,6 +15,13 @@ def run_read_db():
     src.read_db.main()
 
 
+def run_browser(args):
+    browser_scraper_path = os.path.join(
+        os.path.dirname(__file__), "src", "browser_scraper.py"
+    )
+    subprocess.run(["python", browser_scraper_path] + args, check=True)
+
+
 if __name__ == "__main__":
     mode_parser = argparse.ArgumentParser(description="Control script", add_help=False)
     mode_parser.add_argument("--mode", required=True)
@@ -22,6 +29,8 @@ if __name__ == "__main__":
 
     if args.mode == "main":
         run_main(remaining_args)
+    elif args.mode == "browser_scraper":
+        run_browser(remaining_args)
     elif args.mode == "read_db":
         run_read_db()
         pass
