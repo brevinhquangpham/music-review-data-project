@@ -2,6 +2,12 @@ import sqlite3
 from bs4 import BeautifulSoup
 
 
+def treat_ratings_and_reviews(string):
+    subject = str(string).strip() or "0"
+    subject = subject.replace(",", "")
+    return int(subject)
+
+
 def convert_month_to_number(word_month):
     months = [
         "January",
@@ -25,7 +31,7 @@ def convert_month_to_number(word_month):
 
 
 def convert_date_to_numeric(date):
-    date_split = date.split("")
+    date_split = date.split(" ")
     year = 2000
     month = 1
     day = 1
@@ -61,10 +67,19 @@ def get_text_from_nested_span(parent, class_name):
 
 
 def get_descriptors(descriptor_div):
-    return get_text_from_links(descriptor_div, "comma_separated")
+    result = []
+    if not descriptor_div:
+        return None
+    comma_separated_spans = descriptor_div.find_all("span", class_="comma_separated")
+    for span in comma_separated_spans:
+        result.append(span.text)
+
+    return result
 
 
 def get_genres(genre_div):
+    if not genre_div:
+        return None
     return get_text_from_links(genre_div, "genre comma_separated")
 
 
@@ -80,7 +95,16 @@ class AlbumScraper:
             "span", class_="ui_name_locale_original"
         ).text
         artist_name_a = self.album.find("a", class_="artist")
-        artist_name = artist_name_a.find("span", class_="ui_name_locale_original").text
+
+        if artist_name_a:
+            artist_name_span = artist_name_a.find(
+                "span", class_="ui_name_locale_original"
+            ) or artist_name_a.find("span", class_="ui_name_locale")
+            artist_name = (
+                artist_name_span.text if artist_name_span else "Various Artists"
+            )
+        else:
+            artist_name = "Various Artists"
         genre_div = self.album.find(
             "div", class_="page_charts_section_charts_item_genres_primary"
         )
@@ -93,25 +117,30 @@ class AlbumScraper:
         average_score = self.album.find(
             "span", class_="page_charts_section_charts_item_details_average_num"
         ).text
+        if average_score == "":
+            average_score = "0"
 
-        date_text = self.album.find(
-            "div", class_="page_charts_section_charts_item_date"
-        )
-        date_numeric = convert_date_to_numeric(date_text.text)
+        date_div = self.album.find("div", class_="page_charts_section_charts_item_date")
+        date_span = date_div.find("span")
+        date_numeric = convert_date_to_numeric(date_span.text)
 
-        ratings = get_text_from_nested_span(
+        ratings_text = get_text_from_nested_span(
             self.album, "page_charts_section_charts_item_details_ratings"
         )
-        reviews = get_text_from_nested_span(
+        reviews_text = get_text_from_nested_span(
             self.album, "page_charts_section_charts_item_details_reviews"
         )
+        ratings = treat_ratings_and_reviews(ratings_text)
+        reviews = treat_ratings_and_reviews(reviews_text)
+        print(album_title)
+        print(get_genres(genre_div))
         result = {
             "Album-Name": album_title,
             "Artist": artist_name,
             "Genres": get_genres(genre_div),
             "Secondary-Genres": get_genres(genre2_div),
             "Descriptors": get_descriptors(descriptor_div),
-            "Score": average_score,
+            "Score": float(average_score),
             "Ratings": ratings,
             "Reviews": reviews,
             "Date": date_numeric,
