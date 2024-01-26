@@ -63,7 +63,7 @@ def get_text_from_nested_span(parent, class_name):
         nested_span = span.find("span", class_="full")
         if nested_span:
             return nested_span.get_text()
-    return None  # or an appropriate default value
+    return None
 
 
 def get_descriptors(descriptor_div):
@@ -132,8 +132,8 @@ class AlbumScraper:
         )
         ratings = treat_ratings_and_reviews(ratings_text)
         reviews = treat_ratings_and_reviews(reviews_text)
-        print(album_title)
-        print(get_genres(genre_div))
+        # print(album_title)
+        # print(get_genres(genre_div))
         result = {
             "Album-Name": album_title,
             "Artist": artist_name,

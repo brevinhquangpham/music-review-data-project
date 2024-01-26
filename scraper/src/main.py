@@ -8,18 +8,18 @@ import progressbar
 
 def walk_directory(directory, output_db):
     for dirpath, dirnames, filenames in os.walk(directory):
-        # bar = progressbar.ProgressBar(len(filenames))
-        # counter = 0
+        bar = progressbar.ProgressBar(max_value=len(filenames))
+        counter = 0
         for filename in filenames:
-            # bar.update(counter)
-            # counter += 1
+            bar.update(counter)
+            counter += 1
             if filename.endswith(".html"):
-                print(f"Adding albums to sql {filename}")
-                print("-----------------------------")
+                # print(f"Adding albums to sql {filename}")
+                # print("-----------------------------")
                 scraper = HtmlScraper(os.path.join(dirpath, filename))
                 page_albums = scraper.scrape_html_file()
                 add_albums_to_sql(page_albums, output_db)
-        # bar.finish()
+        bar.finish()
 
 
 def main():

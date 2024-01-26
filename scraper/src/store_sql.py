@@ -1,5 +1,4 @@
 import sqlite3
-import os
 
 
 def remove_duplicates_from_list(original_list):
@@ -144,10 +143,10 @@ def handle_genre_concat(primary_genres, secondary_genres):
 
 
 def link_album_to_genres(cursor, album_id, genres):
-    if genres:  # Check if genres is not None and not empty
+    if genres:
         genres_no_dupes = remove_duplicates_from_list(genres)
         for genre_name in genres_no_dupes:
-            if genre_name:  # Check if genre_name is not None and not empty
+            if genre_name:
                 genre_id = insert_genre(cursor, genre_name)
                 cursor.execute(
                     "INSERT INTO album_genre (album_id, genre_id) VALUES (?, ?)",
@@ -156,10 +155,10 @@ def link_album_to_genres(cursor, album_id, genres):
 
 
 def link_album_to_descriptors(cursor, album_id, descriptors):
-    if descriptors:  # Check if descriptors is not None and not empty
+    if descriptors:
         descriptors_no_dupes = remove_duplicates_from_list(descriptors)
         for descriptor_text in descriptors_no_dupes:
-            if descriptor_text:  # Check if descriptor_text is not None and not empty
+            if descriptor_text:
                 descriptor_id = insert_descriptor(cursor, descriptor_text)
                 cursor.execute(
                     "INSERT INTO album_descriptor (album_id, descriptor_id) VALUES (?, ?)",
@@ -175,7 +174,6 @@ def add_albums_to_sql(albums_list, sqlite_file):
 
     for album in albums_list:
         try:
-            print(album["Artist"])
             artist_id = insert_artist(cursor, album["Artist"])
             album_id = insert_album(cursor, album, artist_id)
             all_genres = handle_genre_concat(album["Genres"], album["Secondary-Genres"])
@@ -186,5 +184,4 @@ def add_albums_to_sql(albums_list, sqlite_file):
         except Exception as e:
             print(f"Exception occured: {e}")
             conn.rollback()
-            raise Exception("Bruh")
     conn.close()
