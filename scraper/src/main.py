@@ -1,6 +1,6 @@
 import os
 from store_sql import add_albums_to_sql
-from htmlscraper import HtmlScraper
+from htmlscraper import scrape_html_file
 import argparse
 import time
 import progressbar
@@ -14,10 +14,7 @@ def walk_directory(directory, output_db):
             bar.update(counter)
             counter += 1
             if filename.endswith(".html"):
-                # print(f"Adding albums to sql {filename}")
-                # print("-----------------------------")
-                scraper = HtmlScraper(os.path.join(dirpath, filename))
-                page_albums = scraper.scrape_html_file()
+                page_albums = scrape_html_file(os.path.join(dirpath, filename))
                 add_albums_to_sql(page_albums, output_db)
         bar.finish()
 
